@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8081
+    description: root url
+paths:
+  /service-provider:
+    post:
+      tags:
+        - sp-controller
+      operationId: addServiceProvider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestSProviderDto'
+        required: true
+      responses:
+        201:
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseSProviderDto'
+  /service-provider/{id}:
+    get:
+      tags:
+        - sp-controller
+      operationId: retrieveServiceProvider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseSProviderDto'
+    put:
+      tags:
+        - sp-controller
+      operationId: updateServiceProvider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestSProviderDto'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseSProviderDto'
+    delete:
+      tags:
+        - sp-controller
+      operationId: deleteServiceProvider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: NO-CONTENT
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseSProviderDto'
+components:
+  schemas:
+    RequestSProviderDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        phoneNo:
+          type: string
+        category:
+          type: string
+    ResponseSProviderDto:
+      type: object
+      properties:
+        spId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        address:
+          type: string
+        phoneNo:
+          type: string
+        category:
+          type: string
