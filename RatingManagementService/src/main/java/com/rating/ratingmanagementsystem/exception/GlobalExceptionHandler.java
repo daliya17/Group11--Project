@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleIdNotFound(RatingsException ratingsException)
     {
         ErrorObject object = new ErrorObject();
-        object.setStatusCode(HttpStatus.NOT_FOUND.value());
+        //object.setStatusCode(HttpStatus.NOT_FOUND.value());
         object.setMessage(
                 ratingsException.getMessage());
         return new ResponseEntity<>(object,HttpStatus.NOT_FOUND);

@@ -1,6 +1,7 @@
 package com.rating.ratingmanagementsystem;
 
 
+import com.rating.ratingmanagementsystem.entity.ErrorObject;
 import com.rating.ratingmanagementsystem.entity.Rating;
 import com.rating.ratingmanagementsystem.exception.RatingsException;
 import com.rating.ratingmanagementsystem.repo.RatingRepository;
@@ -48,7 +49,7 @@ class RatingManagementSystemApplicationTests {
 		rating.setRating(5.0);
 		Rating updatedRating = ratingRepository.save(rating);
 		assertEquals(updatedRating.getId(), rating.getId());
-		assertEquals(updatedRating.getRating(), rating.getRating());
+		assertEquals(updatedRating.getRating(), 5.0);
 	}
 
 	@Test
@@ -85,6 +86,7 @@ class RatingManagementSystemApplicationTests {
 
 	}
 
+
 	@Test
 	void testIntegrationDeleteRating() {
 		Rating rating = new Rating();
@@ -98,7 +100,7 @@ class RatingManagementSystemApplicationTests {
 	}
 
 	@Test
-	void testIntegrationDeleteExceptionRating() {
+	void testIntegrationDeleteRatingException() {
 		Rating rating = new Rating();
 		rating.setId("1");
 		rating.setRating(0.0);
@@ -110,7 +112,7 @@ class RatingManagementSystemApplicationTests {
 	}
 
 	@Test
-	void testIntegrationUpdateExceptionRating() {
+	void testIntegrationUpdateRatingException() {
 		Rating rating = new Rating();
 		rating.setId("1");
 		rating.setRating(0.0);
@@ -120,4 +122,45 @@ class RatingManagementSystemApplicationTests {
 		assertThrows(RatingsException.class,() -> ratingService.updateRating("2",rating));
 
 	}
+	@Test
+	void testIntegrationUpdateRatingException2() {
+		Rating rating = new Rating();
+		rating.setId("1");
+		rating.setRating(0.0);
+
+		ratingRepository.save(rating);
+		rating.setRating(4.2);
+		assertThrows(RatingsException.class,() -> ratingService.updateRating("1",rating));
+
+	}
+	@Test
+	void testIntegrationUpdateRatingException3() {
+		Rating rating = new Rating();
+		rating.setId("1");
+		rating.setRating(0.0);
+
+		ratingRepository.save(rating);
+		rating.setRating(5.2);
+		assertThrows(RatingsException.class,() -> ratingService.updateRating("1",rating));
+
+	}
+	@Test
+	void testIntegrationSubmitRatingException1() {
+		Rating rating = new Rating();
+		rating.setId("1");
+		rating.setRating(4.2);
+
+		assertThrows(RatingsException.class,() -> ratingService.submitRating(rating));
+
+	}
+	@Test
+	void testIntegrationSubmitRatingException2() {
+		Rating rating = new Rating();
+		rating.setId("1");
+		rating.setRating(5.2);
+
+		assertThrows(RatingsException.class,() -> ratingService.submitRating(rating));
+
+	}
+
 }

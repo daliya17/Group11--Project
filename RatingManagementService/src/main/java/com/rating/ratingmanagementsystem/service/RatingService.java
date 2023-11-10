@@ -17,7 +17,6 @@ public interface RatingService {
 
     String deleteRating(String id)throws RatingsException;
 
-    long countRatings();
     double avg();
     Map<Double,Integer> countByRating();
 }

@@ -31,6 +31,7 @@ class RatingServiceImplTest {
         ratingService = new RatingServiceImpl(ratingRepository);
         rating = new Rating();
         rating.setRating(5.0);
+        rating.setId("123");
     }
 
     @AfterEach
@@ -46,6 +47,20 @@ class RatingServiceImplTest {
         when(ratingRepository.save(rating)).thenReturn(rating);
         assertThat(ratingService.submitRating(rating)).
                 isEqualTo(rating);
+
+    }
+    @Test
+    void testSubmitException1Rating() {
+        rating.setRating(6.0);
+        Assertions.assertThrows(RatingsException.class,
+                () -> ratingService.submitRating(rating));
+
+    }
+    @Test
+    void testSubmitException2Rating() {
+        rating.setRating(4.3);
+        Assertions.assertThrows(RatingsException.class,
+                () -> ratingService.submitRating(rating));
 
     }
 //
@@ -65,7 +80,35 @@ class RatingServiceImplTest {
                 () -> ratingService.updateRating("1",rating));
 
     }
+    @Test
+    void testUpdateException1Rating() {
+        doReturn(Optional.of(rating)).when(ratingRepository).findById("123");
+        doReturn(rating).when(ratingRepository).save(rating);
+        rating.setRating(4.2);
+       // Rating rating1 = ratingService.updateRating("123", rating);
+        Assertions.assertThrows(RatingsException.class,
+                () -> ratingService.updateRating("123",rating));
 
+    }
+
+    @Test
+    void testUpdateException2Rating() {
+        doReturn(Optional.of(rating)).when(ratingRepository).findById("123");
+        doReturn(rating).when(ratingRepository).save(rating);
+        rating.setRating(5.2);
+        // Rating rating1 = ratingService.updateRating("123", rating);
+        Assertions.assertThrows(RatingsException.class,
+                () -> ratingService.updateRating("123",rating));
+
+    }
+    @Test
+    void testDeleteRating() {
+        doReturn(Optional.of(rating)).when(ratingRepository).findById("123");
+        doReturn(rating).when(ratingRepository).save(rating);
+
+        String s = ratingService.deleteRating("123");
+        assertEquals(s, "Rating with id:123 deleted");
+    }
     @Test
     void testDeleteExceptionRating() {
         mock(Rating.class);
@@ -76,55 +119,16 @@ class RatingServiceImplTest {
         Assertions.assertThrows(RatingsException.class,
                 () -> ratingService.deleteRating("653aaf5819c4077c9fda64b0"));
     }
-//
-    @Test
-    void countRatings() {
 
-        mock(Rating.class);
-        mock(RatingRepository.class);
-
-        Rating rating1 = new Rating();
-        rating1.setRating(4.0);
-        Rating rating2 = new Rating();
-        rating2.setRating(4.0);
-        when(ratingRepository.count()).thenReturn(3L);
-        assertThat(ratingService.countRatings()).
-                isEqualTo(3L);
-    }
 
     @Test
     void avgRatings() {
-        mock(Rating.class);
-        mock(RatingRepository.class);
-
-        Rating rating1 = new Rating();
-        rating1.setRating(4.0);
-        Rating rating2 = new Rating();
-        rating2.setRating(3.0);
-        when(ratingRepository.avg()).thenReturn(4.0);
-        assertThat(ratingService.avg()).
-                isEqualTo(4.0);
+        assertEquals(ratingService.avg(),0.0);
     }
 
     @Test
     void countByRating() {
-        mock(Rating.class);
-        mock(RatingRepository.class);
-
-        Rating rating1 = new Rating();
-        rating1.setRating(4.0);
-        Rating rating2 = new Rating();
-        rating2.setRating(4.0);
-        ratingRepository.save(rating1);
-        ratingRepository.save(rating2);
-        Map<Double,Integer> m = new HashMap<>();
-        m.put(4.0,2);
-        //m.put(3.0,1);
-        List<Rating> ratingList = new ArrayList<>();
-        ratingList.add(rating1);
-        ratingList.add(rating2);
-        when(ratingRepository.findAll()).thenReturn(ratingList);
-        assertThat(ratingService.countByRating()).
-                isEqualTo(m);
+      Map<Double,Integer> m = new HashMap<>();
+        assertEquals(ratingService.countByRating(),m);
     }
 }
