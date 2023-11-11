@@ -1,21 +1,51 @@
 package com.example.servicemanagement.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
+import com.example.servicemanagement.dtos.RequestSpDto;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "service-providers")
 public class ServiceProvider {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
+    @Indexed(unique = true)
+    private String email;
 
     private String name;
     private String address;
     private String phoneNo;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    public static ServiceProvider from(RequestSpDto requestSpDto) {
+        ServiceProvider serviceProvider = new ServiceProvider();
+        serviceProvider.setEmail(requestSpDto.getEmail());
+        serviceProvider.setName(requestSpDto.getName());
+        serviceProvider.setAddress(requestSpDto.getAddress());
+        serviceProvider.setPhoneNo(requestSpDto.getPhoneNo());
+        serviceProvider.setCategory(Category.valueOf(requestSpDto.getCategory()));
+        return serviceProvider;
+    }
+
+    public ServiceProvider updateFrom(RequestSpDto requestSpDto) {
+        this.setEmail(requestSpDto.getEmail());
+        this.setName(requestSpDto.getName());
+        this.setAddress(requestSpDto.getAddress());
+        this.setPhoneNo(requestSpDto.getPhoneNo());
+        this.setCategory(Category.valueOf(requestSpDto.getCategory()));
+        return this;
+    }
 }
