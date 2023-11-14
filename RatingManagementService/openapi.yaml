@@ -1,0 +1,101 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI Specification for Rating Management Service
+  version: '1.0'
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/rating/update/{id}:
+    put:
+      tags:
+        - Rating Management Service API's
+      operationId: updateRating
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/rating/submit:
+    post:
+      tags:
+        - Rating Management Service API's
+      operationId: submitRating
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/rating/counter:
+    get:
+      tags:
+        - Rating Management Service API's
+      operationId: noOfRatingsByRating
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/rating/avg:
+    get:
+      tags:
+        - Rating Management Service API's
+      operationId: averageRating
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/rating/delete/{id}:
+    delete:
+      tags:
+        - Rating Management Service API's
+      operationId: deleteRating
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+components:
+  schemas:
+    Rating:
+      required:
+        - rating
+      type: object
+      properties:
+        rating:
+          type: number
+          format: double

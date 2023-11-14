@@ -1,0 +1,23 @@
+#eureka:
+#    client:
+#        fetch-registry: true
+#        register-with-eureka: true
+#        service-url:
+#            defaultZone: http://localhost:8761/eureka
+#    instance:
+#        prefer-ip-address: true
+spring:
+    application:
+        name: Rating Management Service
+    config:
+        import: optional:configserver:http://139.59.76.89:8085/
+    data:
+        mongodb:
+            uri: mongodb+srv://scaler1:project1@cluster0.ewaivjd.mongodb.net/Ratings
+    profiles:
+        active: development
+springdoc:
+    api-docs:
+        path: /summary
+    swagger-ui:
+        path: documentation
