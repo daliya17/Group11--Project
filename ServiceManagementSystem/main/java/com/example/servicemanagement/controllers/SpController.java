@@ -2,6 +2,7 @@ package com.example.servicemanagement.controllers;
 
 import com.example.servicemanagement.dtos.RequestSpDto;
 import com.example.servicemanagement.dtos.ResponseSpDto;
+import com.example.servicemanagement.exceptions.MissingRequestBodyException;
 import com.example.servicemanagement.exceptions.NotFoundException;
 import com.example.servicemanagement.exceptions.ValueNotAllowedException;
 import com.example.servicemanagement.services.SpService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class SpController {
     @PostMapping
     public ResponseEntity<ResponseSpDto> addServiceProvider(
             @RequestBody RequestSpDto createRequestDto
-    ) throws ValueNotAllowedException {
+    ) throws ValueNotAllowedException, MissingRequestBodyException {
         ResponseSpDto responseSpDto = spService.createServiceProvider(createRequestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -46,8 +48,11 @@ public class SpController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseSpDto>> retrieveAllServiceProviders() {
-        List<ResponseSpDto> responseSpDtos = spService.getAllServiceProviders();
+    public ResponseEntity<List<ResponseSpDto>> retrieveAllServiceProviders(
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "rating", required = false) String rating
+    ) {
+        List<ResponseSpDto> responseSpDtos = spService.getAllServiceProviders(category, rating);
         return ResponseEntity.ok(responseSpDtos);
     }
 
@@ -55,7 +60,7 @@ public class SpController {
     public ResponseEntity<ResponseSpDto> updateServiceProvider(
             @RequestBody RequestSpDto updateRequestDto,
             @PathVariable("id") String id
-    ) throws NotFoundException {
+    ) throws NotFoundException, MissingRequestBodyException {
         ResponseSpDto responseSpDto = spService.updateServiceProviderById(updateRequestDto, id);
         return ResponseEntity.ok(responseSpDto);
     }
