@@ -2,10 +2,12 @@ package com.example.servicemanagement.services;
 
 import com.example.servicemanagement.dtos.RequestSpDto;
 import com.example.servicemanagement.dtos.ResponseSpDto;
+import com.example.servicemanagement.exceptions.MissingRequestBodyException;
 import com.example.servicemanagement.exceptions.NotFoundException;
 import com.example.servicemanagement.exceptions.ValueNotAllowedException;
 import com.example.servicemanagement.models.ServiceProvider;
 import com.example.servicemanagement.repositories.SpRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,18 +17,22 @@ import java.util.Optional;
 public class SpService {
     private final SpRepository spRepository;
 
+    @Autowired
     public SpService(SpRepository spRepository) {
         this.spRepository = spRepository;
     }
 
-    public ResponseSpDto createServiceProvider(RequestSpDto createRequestDto) throws ValueNotAllowedException {
+    public ResponseSpDto createServiceProvider(RequestSpDto createRequestDto) throws ValueNotAllowedException, MissingRequestBodyException {
+        if(createRequestDto == null)
+            throw new MissingRequestBodyException("CreateRequestDto is null");
+
         Optional<ServiceProvider> existingServiceProvider = spRepository.findByEmail(createRequestDto.getEmail());
         if(existingServiceProvider.isPresent())
             throw new ValueNotAllowedException("VNA_001", "Email is already used by another Service Provider");
 
         ServiceProvider newServiceProvider = ServiceProvider.from(createRequestDto);
-        ServiceProvider savedSavedProvider = spRepository.save(newServiceProvider);
-        return ResponseSpDto.from(savedSavedProvider);
+        ServiceProvider savedServiceProvider = spRepository.save(newServiceProvider);
+        return ResponseSpDto.from(savedServiceProvider);
     }
 
     public ResponseSpDto getServiceProviderById(String spId) throws NotFoundException {
@@ -36,17 +42,30 @@ public class SpService {
         return ResponseSpDto.from(serviceProvider.get());
     }
 
-    public List<ResponseSpDto> getAllServiceProviders() {
+    public List<ResponseSpDto> getAllServiceProviders(String category, String rating) {
         List<ServiceProvider> serviceProviders = spRepository.findAll();
-        return serviceProviders.stream()
+
+        // filter based on category
+        List<ServiceProvider> serviceProvidersByCategory = filterSpByCategory(serviceProviders, category);
+        return serviceProvidersByCategory.stream()
                 .map(ResponseSpDto::from)
                 .toList();
     }
 
-    public ResponseSpDto updateServiceProviderById(RequestSpDto updateRequestDto, String spId) throws NotFoundException {
+    private List<ServiceProvider> filterSpByCategory(List<ServiceProvider> serviceProviders, String category) {
+        if(category == null)
+            return serviceProviders;
+        return serviceProviders.stream()
+                .filter(serviceProvider -> serviceProvider.getCategory().toString().matches(category))
+                .toList();
+    }
+
+    public ResponseSpDto updateServiceProviderById(RequestSpDto updateRequestDto, String spId) throws NotFoundException, MissingRequestBodyException {
         Optional<ServiceProvider> optionalServiceProvider = spRepository.findById(spId);
         if(optionalServiceProvider.isEmpty())
             throw new NotFoundException("NF_002", "Service Provider");
+        if(updateRequestDto == null)
+            throw new MissingRequestBodyException("UpdateRequestDto is null");
 
         ServiceProvider updatedServiceProvider = optionalServiceProvider.get().updateFrom(updateRequestDto);
         ServiceProvider savedServiceProvider = spRepository.save(updatedServiceProvider);
